@@ -1,6 +1,6 @@
 ---
 title: "Data Mining Report"
-author: "Fabian Walocha"
+author: "by Fabian Walocha"
 date: "17 March 2019"
 output:
   html_document: default
@@ -14,18 +14,19 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ## Topics of discussion
-The main question that was supposed to be answered in this data mining task was whether or not the political opinion in Germany experienced a shift after the unification in the year 1990. This question was mainly to be answered in a datadriven fashion, i.e. by looking at rawdata and drawing conclusions directly from it rather than second hand sources and accounts towards this. Since this question is multifacetted and can be answered in various ways, the following analysis will focus on the following indicators which highlight things about the political climate in Germany.
+This analysis was performed and documented as a project in the *Data Mining* as part of the *Machine Learning and Data Mining* curriculum at *Université Jean Monnet*.
+
+The main question that is supposed to be answered in this work is whether or not the political opinion in Germany experienced a tonal shift after the German reunification in the year 1990 in the short and in the long run. Moreover, this analysis choses to focus on West German federal states. While the causal effect and repercussions in Eastern German states are contentious and well researched, the same cannot be said about issues regarding only the Western German part of the country. This question is mainly to be answered in a data-driven fashion, i.e. by analysing and transforming at raw data and drawing conclusions from this analysis, rather than second hand accounts and literature. Since the question posed is multifacetted and can be answered in various equally acceptable ways, the following analysis focuses on the following indicators which highlight things about the political climate in Germany.
 
 1) The immediate reaction after the fall of the Berlin Wall in 1989 and the reunification in October of 1990.
-
 
 2) The general trend of left-wing vs center vs right-wing association across time.
 
 3) Regional differences of political tendencies.
 
-
 4) Predictiveness of voting behavior based on other factors.
 
+It is believed that by merging information indicating political trends and culture in Germany using a wide variety of methods, the analysis is able to find synthesis on the topic.
 
 ## About the dataset
 
@@ -38,28 +39,28 @@ source("C:/Users/fwalo/Documents/R Projects/ElectionPolling/code/preprocessing.R
 dset = preprocessing(dataset)
 ```
 
-The dataset used in this study was created and provided by the research group *Wahlen*, on behalf of *ZDF*, a publicly funded German broadcasting station. The dataset consists of surveys containing questions about social facts, electoral intent and political affiliation of German citizens. The survey was conducted via the phone and spans across a timeframe of 41 years between 1977 and 2017. The questionaire used was kept relatively the same across the years, every time a question was changed, discarded or adjusted, the change was noted.
+The dataset used in this study was created and provided by the research group *Wahlen* (@gesis), on behalf of *ZDF*, a publicly funded German broadcasting station. The dataset consists of surveys containing questions about social facts, electoral intent and political affiliation of German citizens. The survey was conducted via the phone and spans across a timeframe of 41 years between 1977 and 2017. The questionaire used was kept relatively the same across the years, every time a question was changed, discarded or adjusted, the change was noted.
 The dataset consists of 82 variables, among others the age and livelihood of the person, their opinion about the current state of politics and economy in Germany, and their last and prospected electoral vote for federal elections.
 
-Out of these 82 variables, 24 variables were hand-selected for this analysis based on their assumed relevancy for the questions at hand. The full list of variables and a short description for each of them can be found in Appendix A. Furthermore a full description of all variables used in the dataset can be found on the website of the GESIS foundation @gesis. 
+Out of these 82 variables, 24 variables were hand-selected for this analysis based on their assumed relevancy for the questions at hand. The full list of variables and a short description for each of them can be found in Appendix A. Furthermore a full description of all variables used in the dataset can be found on the website of the GESIS foundation (@gesis). 
 
 
 ## Data cleaning, preprocessing
 
-The data was prepared uniformly for all further calculations using the following steps.
-First, the variables *v22*, *v23*, *v24* containing information about the subjects stance in a left-right-paradigm, their left-wing tendencies and their right-wing tendencies respectively, were merged into one variable. The variables *v23* and *v24* were used from 1989 to 1996 instead of *v22* to ask the subject for their political tendencies. In these years, the person was first asked whether or not they identify themselves left-wing, right-wing or center, if they answered either left- or right-wing, the surveyor then asked for their intensity from a scale of 1 to 5. In comparison, in all other years, the pe rson was asked how they would place themselves in a left-right spectrum on a scale from 1 (meaning very left-leaning) over 6 (meaning neither left- nor right-leaning) to 11 (meaning very right-leaning). The structure and scaling of the responses thus lend themselves to be merged for further analysis. It is assumed that the rephrasing of the question does not introduce a significant bias into the results.
+The data was prepared uniformly for all further processing steps in the following way.
+First, the variables *v22*, *v23*, *v24* containing information about the subjects stance in a left-right-paradigm, their left-wing tendencies and their right-wing tendencies respectively, were merged into one variable. The variables *v23* and *v24* were used from 1989 to 1996 instead of *v22* to ask the subject for their political tendencies. In these years, the person was first asked whether or not they identify themselves left-wing, right-wing or center, if they answered either left- or right-wing, the surveyor then asked for their belief intensity from a scale of 1 to 5. In comparison, in all other years, the subject was asked how they would place themselves in a left-right spectrum on a scale from 1 (meaning very left-leaning) over 6 (meaning neither left- nor right-leaning) to 11 (meaning very right-leaning). The structure and scaling of the responses thus lend themselves to be merged for further analysis. It is assumed that the rephrasing of the question does not introduce a significant bias into the results.
 
 Secondly, the variables *v76* and *v77* were also merged. The question posed in *v76* was phrased to get the number of people living in the subjects *locality* (Ortsgr&ouml;&szlig;e) which the question posed in *v77* which was used from 2011 to 2017 asked about the size of the *municipality* (Gemeindegr&ouml;&szlig;e). In coloquial German, both terms are interpreted very similarly. Because of this, it was decided to merge these two variables. In this process, the difference in ranges was taken into account and changed accordingly (e.g. the range 5-10k inhabitans was merged with the range 5-20k inhabitants in *v77*).
 
-Lastly, since this analysis is only concerned with Western-German opinion, we discard all subjects which say to reside in eastern German federal states. Furthermore, the data collected from West-Berlin was ommited for this analysis.
+Lastly, since this analysis only concernes itself with Western German opinions, we discard all subjects which say to reside in eastern German federal states. Furthermore, the data collected from West-Berlin was ommited for this analysis.
 
 The remaining 21 variables were then used for all further analysis. The following diagram visualizes the process.
 
-![](R Projects/ElectionPolling/plots/preprocessing.png)
+![](../plots/preprocessing.png)
 
 ## Modeling and Evaluation
 
-The modeling was done in multiple parts.
+The modeling was done in multiple parts to deal with all the above mentioned points respectively.
 
 1) The immediate reaction after the fall of the Berlin Wall in 1989 and the reunification in October of 1990.
 
@@ -87,15 +88,15 @@ dimnames(sm2) <- list(have = parties[c(1,2,3,6,4,8)],
 chorddiag(t(sm2), groupColors = groupColors)
 ```
 
-The ribbon plot was created using a custom plot @zoonekynd2019, it shows the following features. The colors at the rim of the circle represent the color associated with the outside mentioned party, the inner ribbon show the change in voting behavior as percentage of all voters in the receiving party for the election in 1990. The ribbons are bidirectional but the color refers to the bigger directional influence. For example, a big yellow ribbon coming from *FDP* to *Republicaner* means that about 50% of the voters in the election came from people who voted *FDP* in the last election.
-As can be seen, a lot of changes between parties happened. The newly found hard-right party *Republikaner* gained their votes mainly from the ruling parties of the time *CDU* and *FDP*. On the other hand, a not-insignificant part of undecided voters (hereon called as *nicht erhoben*) voted for the main social democrat oposition party SPD.
+The ribbon plot was created using a custom plot (@zoonekynd_2019), it shows the following features. The colors at the rim of the circle represent the color associated with the outside mentioned party, the inner ribbon show the change in voting behavior as percentage of all voters in the receiving party for the election in 1990. The ribbons are bidirectional but the color refers to the bigger directional influence. For example, a big yellow ribbon coming from *FDP* to *Republicaner* means that about 50% of the voters in the election came from people who voted *FDP* in the last election.
+As can be seen, a lot of changes between parties happened. The newly found hard-right party *Republikaner* gained their votes mainly from the ruling parties of the time *CDU* and *FDP*. On the other hand, a not-insignificant part of undecided voters (named as *nicht erhoben*) voted for the main social democrat oposition party SPD.
 These are already indicators that immediate reaction after the vote were not uniformly positive.
 
 2) The general trend of left-wing vs center vs right-wing association across time.
 
 In order to find out the trend of political affiliation regardless of party association, the self reported stance of political leaning in the "left-right-continuum" was looked at. More specifically, the item of interest was the percentage of people associating with left wing ideologies, right wing ideologies or centrist points of view. This set of values was calculated for each year where data was available and compared.
 
-```{r echo=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 years22 = c(1987:1993)
 stacked = matrix(0L, nrow = length(years22),ncol = 11);
 for(idx in 1:length(years22)){
@@ -113,17 +114,16 @@ barplot(t(stacked) , col=rev(coul), border="white",xlab="left-to-right-leaning (
         names.arg = years22,horiz = TRUE,las=1)
 ```
 
-The graph shows a stacked percentage barplot where the colors represent the mean political tendencies across the span of 7 years. A full account of left-right-leanings across the years can be found in *Appendix A*.
+The graph shows a stacked percentage barplot where the colors represent the mean political tendencies across the span of 7 years. While the amount of center-associated positions seems to be expanding across time, the left-wing positions seems to not only increase but also get more intense. A similar increase in intensity can be seen for right-wing opinions although the general percentage of people holding right wing positions seems to be receding towards 1993.
 
-Additionally, to analyse how public sentiment deviates from a centrist point of view over time, Spearman's correlation coefficient @spearman1904proof was estimated and plotted below.
+In order to analyse this pattern over a longer timeframe, an additional analysis was done to observe how the deviation from the centrist point of view in public opinion over time. In order to quantify this change, Spearman's correlation coefficient (@spearman1904proof) was estimated and plotted below.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 dExtr = na.omit(dset[,c("v4","v22")])
 dExtr["v22"] = apply(dExtr["v22"],1,function(x) abs(as.numeric(x)-6))
 mean_ex = matrix(0L, nrow=1,ncol=dim(unique(dExtr["v4"]))[1])
 idx = 1
 for(year in t(unique(dExtr["v4"]))){
-  print(year)
   mean_ex[idx] = colMeans(dExtr[dExtr["v4"]==year,"v22"])
   idx = idx+1
 }
@@ -136,12 +136,12 @@ ggscatter(as.data.frame(matEx),x="year",y="divergence",
           xlab="years",ylab="mean divergence from center")
 ```
 
-The plot shows, that while initially extremist positions persisted before and after unification, the trend is negative going further towards centrist positions. The correlation coefficient of *-0.47* indicates that their is a medium negative correlation between extremists position and the timeframe.
+The plot shows mean deviation regardless of left- or right-wing association over the span of 41 years. The plot shows that while initially extremist positions persisted before and after unification, the trend is negative going further towards centrist positions continuing onwards from 1997. The correlation coefficient of *-0.47* indicates that their is a medium negative correlation between extremists position and the timeframe.
 
 3) Regional differences of political tendencies.
 
 Each Western German federal state was looked at separately and related with eachother in order to account for regional differences. The idea was to find out whether the geographic proximity to their Eastern German counterparts would influence the way public opinion is formed. 
-The following shows the regional difference in voting behavior for the years 1987 and 1993, three years before and after German reunification. The map data was taken from GADM @gadm2019.
+The following shows the regional difference in voting behavior for the years 1987 and 1993, three years before and after German reunification. The map data was taken from GADM (@gadm_2019).
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ### GeoData visualization
@@ -192,7 +192,7 @@ plot(gadm ,col = c2[10,], main=c("Year = ",years[10]))
 
 ```
 
-The scale on the left shows the left-right barometer where 1 represents 1 hard-left stance, 6 represents a centrist position and 11 represents a hard-right stance. The Red-Blue shift clearly shows that almost all states with the exception of Saarland turned more left-leaning between these two years.
+The scale on the left shows the left-right barometer where 1 represents a hard-left stance, 6 represents a centrist position and 11 represents a hard-right stance. The Red-Blue shift clearly shows that almost all states with the exception of Saarland turned more left-leaning between these two years.
 
 In order to correclty quantify this change over time, a linear regression line was fitted using the *easyGgplot2* package for all federal states separately, the results can be seen in the plot below.
 
@@ -230,10 +230,10 @@ As was already hinted at by the last graph, there is a clear trend for all feder
 
 4) Predictiveness of voting behavior based on other factors.
 
-In order to find which factor contribute towards the voting for a given party, a feature selection using random forests was done. The method used for this was Boruta feature selection @kursa2010feature using the *Boruta* library @borutar. The Boruta algorithm tries to estimate the importance of a given variable in estimating a predictor by iteratively generating random forests using a randomized subset of variables with replacement. This way, the contribution of a given variable can be estimated given enough permutation, and uninformative variables can be discarded during the process.
+In order to find which factor contribute towards the voting for a given party, a feature selection using random forests was done. The method used for this was Boruta feature selection (@kursa2010feature) using the *Boruta* library (@boruta_r). The Boruta algorithm tries to estimate the importance of a given variable in estimating a predictor by iteratively generating random forests using a randomized subset of variables with replacement. This way, the contribution of a given variable can be estimated given enough permutation, and uninformative variables can be discarded during the process.
 The results can be found in the plot below.
 
-![](R Projects/ElectionPolling/plots/boruta.png)
+![](../plots/boruta.png)
 
 The plot shows all remaining variables sorted by importance in estimating *v6*, i.e. the prognosis of who a subject is voting for in the next election. Unsurprisingly, the best indicator seems to be *v7*, i.e. the party a subject has voted for in the last election. More interesting are the next two variables. Variable *v9* contains the answers to the question of a subjects general opinion of the *CDU* party, while *v25* contains the answers to the question what a subject thinks of the current state of the German economy.
 
@@ -282,17 +282,19 @@ ggplot() + geom_scatterpie(aes(x=x, y=y,r=radius),
 ```
 
 The plot was made using the *easyGgplot2* package.
-Each point in the scatterplot contains a piechart, which compares the percentage of voters who held specific views and voted for a certain party over all votes for a certain party. The parties that were compared reflect a big spectrum of the political landscape in Germany. *SPD* is a social democratic party, *Gr&uuml;ne* is an ecologic party, *CDU* and *Republicaner* are conservative parties, *FDP* is a economically liberal party and *PDS* (or *Die Linke* as the party is later known) is a party with a socialist agenda.
+Each point in the scatterplot contains a piechart, which compares the percentage of voters who held specific views and voted for a certain party over all votes for a certain party. The parties that were compared reflect a big spectrum of the political landscape in Germany. *SPD* is a social democratic party, *Gr&uuml;ne* is an ecologic party, *CDU* and *Republicaner* are conservative parties, *FDP* is a economically liberal party and *PDS* is a party with a socialist agenda.
 Both variables go from the lowest meaning very low satisfaction to the highest value, meaning totally satisfied.
 This means that a higher percentage of voters vote comparatively for *CDU* when they have a high satisfaction with the party. This point of view is both seen when the economy is judged very well or very poorly, which might be interpreted as the *CDU* being seen as a bringer of good times for these people.
-On the contrary side, if you are very unsatisfied with the *CDU* and hold the economy in high regards, a great percentage of people tends to vote for the liberal party *FDP* which was often the coalition partner of the *CDU*.
+On the contrary side, if you are very unsatisfied with the *CDU* and hold the economy in high regards, a great percentage of people tends to vote for the liberal party *FDP* which is a frequent coalition partner of the *CDU* with similar economic policies.
 
 ## Conclusion
 
-The notion that political opinion after the fall of the Berlin wall has become more extreme is disproven insofar as political extremist tendencies have decreased over time, especially in the last decade. However, as Figure X and Figure Y show, there was still a strong sentiment of dissatisfaction during and directly after the events of 1989 and 1990. The plots show that not only did West Germany recover from the aftereffects of the reunion, the federal states are actually homogenising in their political opinions. While it is not clear if the recent shift towards a center-left position is due to the aftereffects of the GDR integration, it can be said that this shift appears to be stable for the moment.
+The notion that political opinion after the fall of the Berlin wall has become more extreme is disproven insofar as political extremist tendencies have decreased over time, especially in the last decade. However, as the analysis shows, there was still a strong sentiment of dissatisfaction during and directly after the events of 1989 and 1990. The plots show that not only did West Germany recover from the aftereffects of the reunion, the federal states are actually homogenising in their political opinions.
 
 ## Deployment
 
 All code used in this analysis was made publicly available on <https://github.com/FabianWalocha/ElectionPolling>. 
 Furthermore, a link to all datasets has additionally been provided in the *readme.md*, all relevant citations are found in the bibtex file.
+
+## References
 
